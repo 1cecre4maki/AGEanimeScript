@@ -11,6 +11,7 @@ def getlink(search, num):
     url = 'https://www.agemys.org/search?query={}'.format(search)
     episode_num = '第{}集'.format(num)
     # 发起 GET 请求
+    print('请求中...请稍候...')
     response = requests.get(url, proxies={'http': 'http://localhost:7890',
                                           'https': 'http://localhost:7890'
                                           })
@@ -78,12 +79,13 @@ def getlink(search, num):
 
                         # 打开网页
                         url = video_src  # 替换为要访问的网页链接
+                        print('加载网页中，请稍候...')
                         driver.get(url)
 
                         # 设置网页标题
                         driver.execute_script(f"document.title = '{video_title} {episode_num}'")
 
-                        return code
+                        return code, driver
                 else:
                     print('视频信息提取失败，请确认有第{}集后重试！'.format(num))
                     flg = 0
@@ -105,13 +107,14 @@ def getlink(search, num):
         return flg
 
 
-def get_next_link(code, num):
+def get_next_link(code, num, driver, page_num):
     browser_width = 1920  # 设置浏览器窗口的宽度
     browser_height = 1080  # 设置浏览器窗口的高度
 
     episode_num = '第{}集'.format(num)
 
     v_url = 'https://www.agemys.org/play/{}/1/{}'.format(code, num)
+    print('请求中...请稍候...')
     response = requests.get(v_url, proxies={'http': 'http://localhost:7890',
                                             'https': 'http://localhost:7890'
                                             })
@@ -142,23 +145,15 @@ def get_next_link(code, num):
                 video_title = title_tag.text.strip()
                 # print('视频标题:', video_title)
 
-                # 获取显示器的宽度和高度
-                screen_width = win32api.GetSystemMetrics(0)
-                screen_height = win32api.GetSystemMetrics(1)
+                # 在当前浏览器窗口中执行 JavaScript 来打开一个新标签页
+                driver.execute_script("window.open('', '_blank');")
 
-                # 计算浏览器窗口的位置，使其居中
-                browser_x = (screen_width - browser_width) // 2
-                browser_y = (screen_height - browser_height) // 2
+                # 切换到新标签页
+                driver.switch_to.window(driver.window_handles[page_num])
 
-                # 创建一个 WebDriver 实例，例如 Chrome
-                driver = webdriver.Chrome()
-
-                # 设置窗口大小和位置
-                driver.set_window_size(browser_width, browser_height)
-                driver.set_window_position(browser_x, browser_y)
-
-                # 打开网页
+                # 打开新标签页中的网页
                 url = video_src
+                print('加载网页中，请稍候...')
                 driver.get(url)
 
                 # 设置网页标题
