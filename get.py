@@ -76,12 +76,12 @@ def getlink(search, num):
                         driver.set_window_size(browser_width, browser_height)
                         driver.set_window_position(browser_x, browser_y)
 
-                        # 设置网页标题
-                        driver.execute_script(f"document.title = '{video_title} {episode_num}'")
-
                         # 打开网页
                         url = video_src  # 替换为要访问的网页链接
                         driver.get(url)
+
+                        # 设置网页标题
+                        driver.execute_script(f"document.title = '{video_title} {episode_num}'")
 
                         return code
                 else:
@@ -157,12 +157,13 @@ def get_next_link(code, num):
                 driver.set_window_size(browser_width, browser_height)
                 driver.set_window_position(browser_x, browser_y)
 
-                # 设置网页标题
-                driver.execute_script(f"document.title = '{video_title} {episode_num}'")
-
                 # 打开网页
                 url = video_src
                 driver.get(url)
+
+                # 设置网页标题
+                driver.execute_script(f"document.title = '{video_title} {episode_num}'")
+
                 return code
 
         else:
